@@ -8,25 +8,19 @@ public class Archer : MonoBehaviour
     Bone gunBone;    // ость которую вращаем при прицеливании
     Bone bulletBone; // ость из которой идет выстрел
     Bone armR3Bone;  // ость правой руки (относительно ее рассчитываем угол выстрела)
-
-    public float maxPower, sensitivityPower;
-
+    const float gravity = -9.81f; // ”скорение свободного падени€
+    [HideInInspector]
+    public Vector2 tensionPoint; //ѕозици€ нат€жени€ (точка где игрок удерживает курсор)
     bool inAim;
-
-    public Vector2 tensionPoint;
-
-    public GameObject trajectoryPointPrefab; // ѕрефаб точки траектории
-   
-    
-  
-    public float gravity = -9.81f; // ”скорение свободного падени€
-    public int pointsCount = 5; 
-
-    private GameObject[] trajectoryPoints;
 
     public Arrow arrow;
 
-    public float power;
+    public GameObject trajectoryPointPrefab; // ѕрефаб точки траектории
+    public int pointsCount = 5;
+    private GameObject[] trajectoryPoints;
+
+    public float maxPower, sensitivityPower;
+    float power; // текуща€ сила выстрела
     private void Start()
     {
         gunBone = skeletonAnimation.Skeleton.FindBone("gun");
@@ -69,21 +63,16 @@ public class Archer : MonoBehaviour
 
     void Aim()
     {
-
         if (tensionPoint.x <= transform.position.x)
         {
             Vector2 objectPosition = gunBone.GetLocalPosition();
-
-            ///проеврить
             Vector2 direction = tensionPoint - objectPosition;
             float angle = Mathf.Atan2(-direction.y, -direction.x) * Mathf.Rad2Deg;
             float distance = Vector2.Distance(new Vector2(tensionPoint.x, tensionPoint.y), new Vector2(objectPosition.x, objectPosition.y));
             gunBone.Rotation = angle;
-            power = distance * sensitivityPower;
+            power = Mathf.Min(distance * sensitivityPower, maxPower);
             DrawTrajectory(power);
-
         }
-
     }
 
     public void EndAim()
@@ -94,12 +83,11 @@ public class Archer : MonoBehaviour
         {
             trajectoryPoints[i].gameObject.SetActive(false);
         }
-
     }
 
     void DrawTrajectory(float power)
     {
-        for (int i = 0; i <= pointsCount; i++)
+        for (int i = 1; i <= pointsCount; i++) //ћожно задать начальное i=0 чтобы отображалась точка с начала траектории
         {
             float time = i / (float)pointsCount;
             Vector2 position = CalculateTrajectoryPoint(time, power);
@@ -113,7 +101,6 @@ public class Archer : MonoBehaviour
         Vector2 objectPosition = bulletBone.GetWorldPosition(transform);
         Vector2 objectPosition2 = armR3Bone.GetWorldPosition(transform);
         Vector2 direction = objectPosition2 - objectPosition;
-
         Vector2 initialVelocity = -direction * power;
         Vector2 position = objectPosition + (initialVelocity * time) + (0.5f * gravity * time * time * Vector2.up);
         return position;

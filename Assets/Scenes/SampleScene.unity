@@ -1076,14 +1076,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   skeletonAnimation: {fileID: 38220671}
-  maxPower: 0
-  sensitivityPower: 1
   tensionPoint: {x: 0, y: 0}
-  trajectoryPointPrefab: {fileID: 399496552}
-  gravity: -9.81
-  pointsCount: 10
   arrow: {fileID: 923488062}
-  power: 0
+  trajectoryPointPrefab: {fileID: 399496552}
+  pointsCount: 10
+  maxPower: 10
+  sensitivityPower: 1
 --- !u!114 &1666828588
 MonoBehaviour:
   m_ObjectHideFlags: 0
